@@ -1,0 +1,76 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Definition of a linked list node
+struct ListNode {
+    int value;
+    struct ListNode *next;
+};
+
+// Function to detect a cycle in a linked list
+int detectCycle(struct ListNode *head) {
+    if (head == NULL) {
+        return 0;  // No cycle in an empty list
+    }
+    
+    struct ListNode *tortoise = head;  // Slow pointer
+    struct ListNode *hare = head;      // Fast pointer
+
+    while (hare != NULL && hare->next != NULL) {
+        tortoise = tortoise->next;          // Move tortoise one step
+        hare = hare->next->next;           // Move hare two steps
+        
+        if (tortoise == hare) {
+            return 1;  // Cycle detected
+        }
+    }
+    
+    return 0;  // No cycle
+}
+
+// Helper function to create a new node
+struct ListNode* createNode(int value) {
+    struct ListNode* newNode = (struct ListNode*)malloc(sizeof(struct ListNode));
+    newNode->value = value;
+    newNode->next = NULL;
+    return newNode;
+}
+
+// Helper function to create a cycle in the linked list for testing
+void createCycle(struct ListNode *head, int pos) {
+    struct ListNode *temp = head;
+    struct ListNode *cycleStartNode = NULL;
+    int count = 0;
+
+    while (temp->next != NULL) {
+        if (count == pos) {
+            cycleStartNode = temp;
+        }
+        temp = temp->next;
+        count++;
+    }
+    
+    if (cycleStartNode != NULL) {
+        temp->next = cycleStartNode;  // Create a cycle at the specified position
+    }
+}
+
+// Main function to test the cycle detection
+int main() {
+    struct ListNode *head = createNode(1);
+    head->next = createNode(2);
+    head->next->next = createNode(3);
+    head->next->next->next = createNode(4);
+    head->next->next->next->next = createNode(5);
+
+    // Create a cycle for testing (cycle starts at position 2)
+    createCycle(head, 2);
+
+    if (detectCycle(head)) {
+        printf("Cycle detected\n");
+    } else {
+        printf("No cycle detected\n");
+    }
+
+    return 0;
+}
