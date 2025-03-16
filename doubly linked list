@@ -1,0 +1,216 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+struct node{
+    int data;
+    struct node * prev;
+    struct node * next;
+};
+
+// Function to create a new node
+struct node * createNode(int data){
+    struct node * newNode = (struct node *)malloc(sizeof(struct node));
+    newNode->data = data;
+    newNode->prev = NULL;
+    newNode->next = NULL;
+    return newNode;
+}
+
+// Insert at the beginning
+struct node * insertAtFirst(struct node * head, int data){
+    struct node * newNode = createNode(data);
+    if(head == NULL){
+        return newNode;
+    } else {
+        newNode->next = head;
+        head->prev = newNode;
+        return newNode;
+    }
+}
+
+// Insert at the end
+struct node * insertAtLast(struct node * head, int data){
+    struct node * nn = createNode(data);
+    if(head == NULL){
+        return nn;
+    } else{
+        struct node * temp = head;
+        while(temp->next != NULL){ 
+            temp = temp->next;
+        }
+        temp->next = nn;
+        nn->prev = temp;
+    }
+    return head;
+}
+
+// Insert at a specific position
+struct node * insertAtSpecificPosition(struct node * head, int data, int pos){
+    if(head == NULL || pos < 1){
+        printf("Data cannot be inserted at the Given Position\n");
+        return NULL;
+    } else if (pos == 1){
+        return insertAtFirst(head, data);
+    } else {
+        struct node * newNode = createNode(data);
+        struct node * temp = head;
+        int count = 0;
+        while(temp != NULL){
+            count++;
+            if(count == pos - 1){
+                newNode->next = temp->next;
+                if (temp->next != NULL) {
+                    temp->next->prev = newNode;
+                }
+                temp->next = newNode;
+                newNode->prev = temp;
+                return head;
+            }
+            temp = temp->next;
+        }
+        if(count == pos - 1){
+            temp->next = newNode;
+            newNode->prev = temp;
+        }
+        return head;
+    }
+}
+
+// Delete at the beginning
+struct node * deleteAtFirst(struct node * head){
+    if(head == NULL){
+        return NULL;
+    } else if(head->next == NULL){
+        free(head);
+        return NULL;
+    } else {
+        struct node * temp = head;
+        head->next->prev = NULL;
+        head = head->next;
+        free(temp);
+        return head;
+    }
+}
+
+// Delete at the end
+struct node * deleteAtLast(struct node * head){
+    if(head == NULL){
+        return NULL;
+    } else if(head->next == NULL){
+        free(head);
+        return NULL;
+    } else {
+        struct node * temp = head;
+        while(temp->next != NULL){
+            temp = temp->next;
+        }
+        temp->prev->next = NULL;
+        free(temp);
+        return head;
+    }
+}
+
+// Delete at a specific position
+struct node * deleteAtSpecificPosition(struct node * head, int pos){
+    if(head == NULL || pos < 1){
+        return NULL;
+    } else if(pos == 1){
+        return deleteAtFirst(head);
+    } else {
+        struct node * temp = head;
+        int count = 0;
+        while(temp != NULL && count < pos - 1){
+            temp = temp->next;
+            count++;
+        }
+        if(temp != NULL && temp->next != NULL){
+            struct node * toDelete = temp->next;
+            temp->next = temp->next->next;
+            if (temp->next != NULL) {
+                temp->next->prev = temp;
+            }
+            free(toDelete);
+        }
+        return head;
+    }
+}
+
+// Function to display the list
+void display(struct node * head){
+    if(head == NULL){
+        printf("The list is empty\n");
+        return;
+    }
+    struct node * temp = head;
+    while(temp != NULL){
+        printf("%d <-> ", temp->data);
+        temp = temp->next;
+    }
+    printf("NULL\n");
+}
+
+int main(){
+	struct node * head = NULL;
+	int data,choice,pos;
+	do{
+		printf("1) Insert At First\n");
+		printf("2) Insert At Last\n");
+		printf("3) Insert At Specific Position\n");
+		printf("4) Delete At First\n");
+		printf("5) Delete At Last\n");
+		printf("6) Delete At Specific Position\n");
+		//printf("7) Update value\n");
+		printf("Enter your choice:\n");
+		scanf("%d",&choice);
+		switch(choice){
+			case 1:
+				printf("Enter the Data To be Inserted:\n");
+				scanf("%d",&data);
+				head = insertAtFirst(head,data);
+				printf("List after inserting:\n");
+				display(head);
+				break;				
+			case 2:
+				printf("Enter the Data To be Inserted:\n");
+				scanf("%d",&data);
+				head = insertAtLast(head,data);
+				printf("List after inserting:\n");
+				display(head);
+				break;
+			case 3:
+				printf("Enter the Data To be Inserted:\n");
+				scanf("%d",&data);
+				printf("Enter the position to be inserted:\n");
+				scanf("%d",&pos);
+				head = insertAtSpecificPosition(head,data,pos);
+				printf("List after inserting:\n");
+				display(head);
+				break;
+			case 4:				
+				printf("Before Deleting\n");
+				display(head);
+				head = deleteAtFirst(head);
+				printf("After Deleting:\n");
+				display(head);
+				break;
+			case 5:
+				printf("Before Deleting\n");
+				display(head);
+				head = deleteAtLast(head);
+				printf("After Deleting:\n");
+				display(head);
+				break;
+			case 6:
+				printf("Enter the position to be Deleted:\n");
+				scanf("%d",&pos);
+				printf("Before Deleting\n");
+				display(head);
+				head = deleteAtSpecificPosition(head,pos);
+				printf("After Deleting:\n");
+				display(head);
+				break;
+			
+		}
+	} while(choice >=1 && choice <=7);
+	return 0;
+}
